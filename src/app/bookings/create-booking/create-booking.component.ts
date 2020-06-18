@@ -35,6 +35,7 @@ export class CreateBookingComponent implements OnInit {
           6 * 24 * 60 * 60 * 1000 -
           new Date(this.startDate).getTime())
       ).toISOString();
+      console.log(this.endDate)
     }
   }
 
@@ -62,8 +63,12 @@ export class CreateBookingComponent implements OnInit {
   }
 
   datesValid() {
-    const startDate = new Date(this.form.value['date-from']);
-    const endDate = new Date(this.form.value['date-to']);
-    return endDate > startDate;
+    if(this.form.value['date-from'] != undefined && this.form.value['date-to'] != undefined){
+      const startDate = new Date(this.form.value['date-from']);
+      const endDate = new Date(this.form.value['date-to']);
+      return endDate > startDate;
+    }
+    return true
+    
   }
 }
