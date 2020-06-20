@@ -1,0 +1,31 @@
+<div class="picker">
+  <ion-spinner color="primary" *ngIf="isLoading"></ion-spinner>
+  <ion-img
+    role="button"
+    class="location-image"
+    (click)="onPickLocation()"
+    [src]="selectedLocationImage"
+    *ngIf="selectedLocationImage && !isLoading"
+  ></ion-img>
+  <ion-button
+    color="primary"
+    (click)="onPickLocation()"
+    *ngIf="!selectedLocationImage && !isLoading"
+  >
+    <ion-icon name="map" slot="start"></ion-icon>
+    <ion-label>Select Location</ion-label>  
+  </ion-button>
+ 
+    <div class="alert"  *ngIf="!selectedLocationImage && !isLoading">
+      <ion-label color="tertiary">
+      <ion-icon name="warning-outline" slot="start" color="warning"></ion-icon>
+      This May not work now due to free api quota.</ion-label>
+    </div>
+
+    <div class="alert"    *ngIf="selectedLocationImage && !isLoading">
+      <ion-label color="secondary">
+      <ion-icon name="bug-outline" slot="start" color="danger"></ion-icon>
+      See I told you this will not work <ion-icon name="happy" slot="end" color="success"></ion-icon></ion-label>
+    </div>
+    
+</div>

@@ -4,6 +4,8 @@ import { AuthService } from 'src/app/auth/service/auth.service';
 import { BehaviorSubject, of } from 'rxjs';
 import { take, map, tap, delay, switchMap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
+import { Location } from '@angular/common';
+import { PlaceLocation } from '../models/location.model';
 interface PlaceData {
   availableFrom: string;
   availableTo: string;
@@ -12,6 +14,7 @@ interface PlaceData {
   price: number;
   title: string;
   userId: string;
+  location: PlaceLocation;
 }
 // new Place(
 //   'p1',
@@ -70,7 +73,8 @@ export class PlacesService {
           placeData.price,
           new Date(placeData.availableFrom),
           new Date(placeData.availableTo),
-          placeData.userId
+          placeData.userId,
+          placeData.location
         );
       })
     );
@@ -96,7 +100,8 @@ export class PlacesService {
                   resData[key].price,
                   new Date(resData[key].availableFrom),
                   new Date(resData[key].availableTo),
-                  resData[key].userId
+                  resData[key].userId,
+                 resData[key].location
                 )
               );
             }
@@ -113,18 +118,21 @@ export class PlacesService {
     description: string,
     price: number,
     dateFrom: Date,
-    dateTo: Date
+    dateTo: Date,
+    location: PlaceLocation,
+    imageUrl:string
   ) {
     let generatedId: string;
     const newPlace = new Place(
       Math.random().toString(),
       title,
       description,
-      'https://images.unsplash.com/photo-1522660517748-2931a7a4aaf6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=701&q=80',
+      imageUrl,
       price,
       dateFrom,
       dateTo,
-      this.authService.userId
+      this.authService.userId,
+      location
     )
     return this.http.post('https://ionic-5-angular.firebaseio.com/offered-places.json', { ...newPlace, id: null })
       .pipe(
@@ -167,7 +175,8 @@ export class PlacesService {
           oldPlace.price,
           oldPlace.availableFrom,
           oldPlace.availableTo,
-          oldPlace.userId
+          oldPlace.userId,
+          oldPlace.location
         );
         return this.http.put(
           `https://ionic-5-angular.firebaseio.com/offered-places/${placeId}.json`,
@@ -177,6 +186,15 @@ export class PlacesService {
       tap(() => {
         this._places.next(updatedPlaces);
       })
+    );
+  }
+  uploadImage(image: File) {
+    const uploadData = new FormData();
+    uploadData.append('image', image);
+
+    return this.http.post<{imageUrl: string, imagePath: string}>(
+      'https://us-central1-ionic-5-angular.cloudfunctions.net/storeImage',
+      uploadData
     );
   }
 }
